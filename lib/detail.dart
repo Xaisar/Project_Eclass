@@ -578,7 +578,11 @@ class _DetailPageState extends State<DetailPage> {
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  DetailKelas_Api().postKehadiran(_course.id, _student.id, absensi).then((value) => print(value));
+                                  DetailKelas_Api().postKehadiran(_course.id, _student.id, absensi).then((value) {
+                                    print(value);
+                                    Navigator.pop(context);
+                                    });
+                                  
                                 },
                                 style: ElevatedButton.styleFrom(
                                   primary: Color(0xFF0A5896), // Background color
