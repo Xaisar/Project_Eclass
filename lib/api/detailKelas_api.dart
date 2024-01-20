@@ -25,10 +25,10 @@ class DetailKelas_Api extends GetConnect {
   Future<dynamic> postKehadiran(String id_course , String id_student, var number_of_meeting) async {
     DateTime date = DateTime.now();
     String f = "${date.year}-${date.month}-${date.day}";
-    print(f);
-    print(id_course);
-    print(id_student);
-    print(number_of_meeting);
+    // print(f);
+    // print(id_course);
+    // print(id_student);
+    // print(number_of_meeting);
     final response = await http.post(
       // Uri.parse('https://ce0c-125-166-118-94.ngrok-free.app/api/login'),
       Uri.parse('$url/student/classes2/kehadiran'),
@@ -47,4 +47,53 @@ class DetailKelas_Api extends GetConnect {
       return message;
   }
 
+  Future<dynamic> postTugasPengetahuan(String id_tugas , String id_student, String type, String link, String grade) async {
+    print(id_tugas);
+    print(id_student);
+    print(type);
+    print(link);
+    print(grade);
+    final response = await http.post(
+      // Uri.parse('https://ce0c-125-166-118-94.ngrok-free.app/api/login'),
+      Uri.parse('$url/student/classes2/tugasPengetahuan/upload'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        //ganti username untuk ganti user di tampilan dashboard
+        'id_tugas': '$id_tugas',
+        'id_student': '$id_student',
+        'type': '$type',
+        'data': '$link',
+        'grade': '$grade'
+      }));
+    
+      final Map<String, dynamic> message = json.decode(response.body);
+      return message;
+  }
+
+  Future<dynamic> postTugasKeterampilan(String id_tugas , String id_student, String type, String link, String grade) async {
+    print(id_tugas);
+    print(id_student);
+    print(type);
+    print(link);
+    print(grade);
+    final response = await http.post(
+      // Uri.parse('https://ce0c-125-166-118-94.ngrok-free.app/api/login'),
+      Uri.parse('$url/student/classes2/tugasKeterampilan/upload'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        //ganti username untuk ganti user di tampilan dashboard
+        'id_tugas': '$id_tugas',
+        'id_student': '$id_student',
+        'type': '$type',
+        'data': '$link',
+        'grade': '$grade'
+      }));
+    
+      final Map<String, dynamic> message = json.decode(response.body);
+      return message;
+  }
 }

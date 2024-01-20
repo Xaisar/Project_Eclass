@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_eclass/absen.dart';
 import 'package:mobile_eclass/api/detailKelas_api.dart';
 // import 'package:mobile_eclass/login.dart';
 import 'package:mobile_eclass/dashboard.dart';
 import 'package:mobile_eclass/conference_room.dart';
+import 'package:mobile_eclass/model/Assigment_model.dart';
+import 'package:mobile_eclass/model/Meet_model.dart';
 import 'package:mobile_eclass/model/class_group.dart';
 import 'package:mobile_eclass/model/course_model.dart';
+import 'package:mobile_eclass/model/kehadiran_model.dart';
 import 'package:mobile_eclass/model/profile_model.dart';
 import 'package:mobile_eclass/model/siswa_model.dart';
 import 'package:mobile_eclass/model/study_year_model.dart';
@@ -32,6 +36,14 @@ class _DetailPageState extends State<DetailPage> {
 
   Course _course = Course(id: '', semester: "", thumbnail: "", number_of_meetings: "", description: "", study_year: StudyYear(id: "", year: "", semester: ""), class_group: ClassGroup(id: "", name: "", code: ""), subject: Subject(id: "", code: "", name: "", grade: "",),teacher: Teacher(email: "",name: "",id: "",identity_number: "")) ;
   Profile _student = Profile(id: '', nisn: '', nama: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
+  List<Kehadiran> kehadiran_present = [];
+  List<Kehadiran> kehadiran_absent = [];
+  List<Assignment> tp = [];
+  List<Assignment> tk = [];
+  List<Meet> meet = [];
+  int groupValue = 2;
+  List<String> type = ["file", "link"];
+  String link = "";
 
   Future<Null> _isiData()async{
     setState((){
@@ -42,10 +54,36 @@ class _DetailPageState extends State<DetailPage> {
       setState(() {
         _course = Course.fromJson(response["courses"]);
         _student = Profile.fromJson(response["student"]);
-        print(_course);
-        print(_course.teacher.name);
-        print(_student);
-        print(_student.id);
+        if (response["kehadiran_present"] != null){
+          for(Map<String,dynamic> x in response['kehadiran_present']){
+          // print(x);
+          kehadiran_present.add(Kehadiran.fromJson(x));
+        };
+        };
+        if (response["kehadiran_absent"] != null){
+          for(Map<String,dynamic> x in response['kehadiran_absent']){
+          // print(x);
+          kehadiran_absent.add(Kehadiran.fromJson(x));
+          };
+        };
+        if (response["courses"]["video_conference"] != null){
+          for(Map<String,dynamic> x in response["courses"]["video_conference"] ){
+          // print(x);
+          meet.add(Meet.fromJson(x));
+          };
+        };
+         if (response["tugas_pengetahuan"] != null){
+          for(Map<String,dynamic> x in response["tugas_pengetahuan"]){
+          // print(x);
+          tp.add(Assignment.fromJson(x));
+          };
+        };
+        if (response["tugas_keterampilan"] != null){
+          for(Map<String,dynamic> x in response["tugas_keterampilan"]){
+          // print(x);
+          tk.add(Assignment.fromJson(x));
+          };
+        };
         _loading = false;
       });
     });
@@ -88,7 +126,7 @@ class _DetailPageState extends State<DetailPage> {
           elevation: 0,
         ),
         body: 
-        _loading? Center(child: CircularProgressIndicator()):
+        // _loading? Center(child: CircularProgressIndicator()):
         SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
@@ -403,8 +441,8 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   SizedBox(
                     width: Get.width* 0.475,
-                    child: const Text(
-                        ': 3 Pertemuan',
+                    child: Text(
+                        ': '+ kehadiran_present.length.toString() + ' Pertemuan',
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           color: Color(0xFF0A5896),
@@ -438,8 +476,8 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   SizedBox(
                     width: Get.width* 0.475,
-                    child: const Text(
-                        ': 13 Pertemuan',
+                    child: Text(
+                        ': ' + kehadiran_absent.length.toString()  + ' Pertemuan',
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           color: Color(0xFF0A5896),
@@ -654,9 +692,41 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                 )),              
               const SizedBox(height: 15),
+              meet.length == 0? 
               Container(
                   width: Get.width,
+                  alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  margin: EdgeInsets.only(bottom: 15),
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(
+                          width: 0.50, color: Color(0xFF719EC2)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                            "Tidak ada Jadwal",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF0A5896),
+                              fontSize: 20,
+                              fontFamily: 'Work Sans',
+                              fontWeight: FontWeight.w600,
+                              height: 0,
+                            ),
+                          ),
+              ):
+              Column(
+                children: List.generate(
+                          meet.length,
+                          (index) {
+                            return 
+                            Container(
+                  width: Get.width,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  margin: EdgeInsets.only(bottom: 15),
                   decoration: ShapeDecoration(
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
@@ -671,8 +741,8 @@ class _DetailPageState extends State<DetailPage> {
                     children: [
                         SizedBox(
                           width: Get.width,
-                          child: const Text(
-                            'Uji Coba',
+                          child: Text(
+                            meet[index].name,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xFF0A5896),
@@ -699,7 +769,7 @@ class _DetailPageState extends State<DetailPage> {
                                 width:
                                     10), // Add space between the icon and text
                             Text(
-                              'Pertemuan ke-1',
+                              'Pertemuan ke-' + meet[index].meeting_number,
                               style: TextStyle(
                                 color: Color(0xFF0A5896),
                                 fontSize: 15,
@@ -713,7 +783,7 @@ class _DetailPageState extends State<DetailPage> {
                          const SizedBox(
                           height: 10,
                         ),
-                        const Row(
+                         Row(
                           children: [
                             Icon(
                               Icons.calendar_today,
@@ -728,7 +798,7 @@ class _DetailPageState extends State<DetailPage> {
                                       10, // Add space between the icon and text
                                 ),
                                 Text(
-                                  '11-10-2023',
+                                  meet[index].tanggal,
                                   style: TextStyle(
                                     color: Color(0xFF0A5896),
                                     fontSize: 15,
@@ -756,7 +826,7 @@ class _DetailPageState extends State<DetailPage> {
                                       5, // Add space between the separator and the time
                                 ),
                                 Text(
-                                  '08:59',
+                                  meet[index].waktu,
                                   style: TextStyle(
                                     color: Color(0xFF0A5896),
                                     fontSize: 15,
@@ -810,8 +880,11 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                   ])
+              );
+                          },
+                        ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               Container(
                     width: Get.width,
                     alignment: Alignment.center,// Tambahkan margin pada sisi kiri
@@ -883,30 +956,409 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                     ],
                   ),
-              ),
-              
+              ),             
               const SizedBox(height: 30),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 20),
-                      child: const Text(
-                        'Tugas Pengetahuan',
+              Container(
+                width: Get.width,
+                alignment: Alignment.center,
+                child: const Text(
+                  'Tugas Pengetahuan',
+                  style: TextStyle(
+                    color: Color(0xFF0A5896),
+                    fontSize: 20,
+                    fontFamily: 'Work Sans',
+                    fontWeight: FontWeight.w600,
+                    height: 0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                width: 340,
+                height: 30,
+                decoration: ShapeDecoration(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side:
+                        const BorderSide(width: 0.50, color: Color(0xFF719EC2)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.search,
+                        color: Color(0xffafbac3),
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'search',
+                        style: TextStyle(
+                          color: Color(0x72719EC2),
+                          fontSize: 16,
+                          fontFamily: 'Work Sans',
+                          fontWeight: FontWeight.w300,
+                          height: 0,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              tp.length == 0?
+              Container(
+                  width: Get.width,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  margin: EdgeInsets.only(bottom: 15),
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(
+                          width: 0.50, color: Color(0xFF719EC2)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                            "Tidak ada Tugas",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF0A5896),
+                              fontSize: 20,
+                              fontFamily: 'Work Sans',
+                              fontWeight: FontWeight.w600,
+                              height: 0,
+                            ),
+                          ),
+              ):
+              Column(
+                children: List.generate(tp.length, (index) {
+                  return
+                  Container(
+                width: Get.width,
+                // height: 127,
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: ShapeDecoration(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side:
+                        const BorderSide(width: 0.50, color: Color(0xFF719EC2)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      child: Text(
+                        tp[index].name,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Color(0xFF0A5896),
-                          fontSize: 20,
+                          fontSize: 16,
                           fontFamily: 'Work Sans',
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           height: 0,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 10,
+                    ), // Add space between 'Tugas 1' and the new text
+                    Text(
+                      'Start: ' + tp[index].date_start + ', ' + tp[index].time_start,
+                      style: TextStyle(
+                        color: Color(0xFF0A5896),
+                        fontSize: 14,
+                        fontFamily: 'Work Sans',
+                        fontWeight: FontWeight.w300,
+                        height: 1.5, // Adjust line height as needed
+                      ),// Enable automatic wrapping of text
+                      maxLines: 2, 
+                      overflow: TextOverflow.ellipsis,// Set the maximum number of lines
+                    ),
+                     const SizedBox(
+                      height: 5,
+                    ), // Add space between 'Tugas 1' and the new text
+                    Text(
+                      'End: ' + tp[index].date_end + ', ' + tp[index].time_end,
+                      style: TextStyle(
+                        color: Color(0xFF0A5896),
+                        fontSize: 14,
+                        fontFamily: 'Work Sans',
+                        fontWeight: FontWeight.w300,
+                        height: 1.5, // Adjust line height as needed
+                      ),// Enable automatic wrapping of text
+                      maxLines: 2, 
+                      overflow: TextOverflow.ellipsis,// Set the maximum number of lines
+                    ),                 
+                    const SizedBox(
+                        height: 10), // Adjust the height as needed               
+                    Row(
+                      children: [
+                        Container(
+                          width: 95,
+                          height: 20,
+                          decoration: ShapeDecoration(
+                            color: Color(0xFFF3AD1B),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 87,
+                              child: Text(
+                                'Belum Dikerjakan',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontFamily: 'Work Sans',
+                                  fontWeight: FontWeight.w400,
+                                  height: 0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // Aksi yang akan dilakukan saat tombol ditekan
+                            showDialog(
+                      context: context,
+                      builder: (BuildContext context) => Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: Center(
+                          child: Container(
+                            height: Get.height * 0.45,
+                            //ganti nilai height jika ada overflow di tampilan
+                            margin: EdgeInsets.symmetric(horizontal: 30),
+                            padding: EdgeInsets.all(20),
+                             decoration: ShapeDecoration(
+                                          color: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            side: const BorderSide(
+                        width: 0.50, color: Color(0xFF719EC2)),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: (){
+                                        Navigator.pop(context);
+                                      }, 
+                                      icon: Icon(Icons.arrow_back_ios, color: Colors.red,)),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      child: const Text(
+                                                'Upload Tugas',
+                                                style: TextStyle(
+                                                  color: Color(0xFF0A5896),
+                                                              fontSize: 20,
+                                                              fontFamily: 'Work Sans',
+                                                              fontWeight: FontWeight.w600,
+                                                              height: 0,
+                                                  ),
+                                              ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 25),
+                                const Text(
+                                                'Type',
+                                                style: TextStyle(
+                                                  color: Color(0xFF0A5896),
+                                                              fontSize: 20,
+                                                              fontFamily: 'Work Sans',
+                                                              fontWeight: FontWeight.w600,
+                                                              height: 0,
+                                                  ),
+                                              ),
+                                SizedBox(height: 10),         
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:[
+                                    // Row(
+                                    //   children: [
+                                    //     Radio(value: 1, groupValue: groupValue, onChanged: (value){
+                                    //       setState(() {
+                                    //         groupValue = value;
+                                    //       });
+                                    //     }),
+                                    //     Text(
+                                    //   'File',
+                                    //   style: TextStyle(
+                                    //     color: Colors.black,
+                                    //     fontSize: 14,
+                                    //     fontFamily: 'Work Sans',
+                                    //     fontWeight: FontWeight.w500,
+                                    //     height: 0,
+                                    //   ),
+                                    // ),
+                                    //   ],
+                                    // ),
+                                    Row(
+                                      children: [
+                                        Radio(value: 2, groupValue: groupValue, onChanged: (value){
+                                          setState(() {
+                                            groupValue = value as int;
+                                            print(groupValue);
+                                          });
+                                        }),
+                                        Text(
+                                      'Link',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: 'Work Sans',
+                                        fontWeight: FontWeight.w500,
+                                        height: 0,
+                                      ),
+                                    ),
+                                      ],
+                                    ),
+
+                                  ]
+                                ),
+                                SizedBox(height: 25),
+              TextField(
+              decoration: InputDecoration(
+                labelText: 'input link',
+                border: OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(10), // Sudut bulat dengan radius 5
+                ),
               ),
+              style: const TextStyle(
+                fontFamily: 'WorkSans',
+                fontSize: 16,
+                // Ganti dengan nama font Work Sans yang sesuai
+              ),
+              onChanged: (value){
+                link = value;
+                print(link);
+              },
+            ),
+                                SizedBox(height: 25),
+                                 Container(
+                              width: Get.width,
+                              alignment: Alignment.centerRight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  DetailKelas_Api().postTugasPengetahuan(tp[index].id, _student.id, type[groupValue-1], link, _course.subject.grade).then((value) {
+                                    print(value);
+                                    Navigator.pop(context);
+                                    });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xFF0A5896), // Background color
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                child: const SizedBox(
+                                  width: 80,
+                                  height: 30,
+                                  child: Center(
+                                    child: Text(
+                                      'upoad',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontFamily: 'Work Sans',
+                                        fontWeight: FontWeight.w500,
+                                        height: 0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                          },
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 10),
+                              Container(
+                                width: 95,
+                                height: 20,
+                                decoration: ShapeDecoration(
+                                  color: Color(0xFFF3AD1B),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(3),
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: 6),
+                                    SizedBox(
+                                      width: 69,
+                                      child: Text(
+                                        'Input tugas',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontFamily: 'Work Sans',
+                                          fontWeight: FontWeight.w400,
+                                          height: 0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+                }),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                width: Get.width,
+                alignment: Alignment.center,
+                  child: const Text(
+                    'Tugas Keterampilan',
+                    style: TextStyle(
+                      color: Color(0xFF0A5896),
+                      fontSize: 20,
+                      fontFamily: 'Work Sans',
+                      fontWeight: FontWeight.w600,
+                      height: 0,
+                    ),
+              )),
+              const SizedBox(height: 15),
               Container(
                 width: 340,
                 height: 30,
@@ -942,9 +1394,39 @@ class _DetailPageState extends State<DetailPage> {
                 ),
               ),
               const SizedBox(height: 16),
+              tk.length == 0?
               Container(
-                width: 320,
-                height: 127,
+                  width: Get.width,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  margin: EdgeInsets.only(bottom: 15),
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(
+                          width: 0.50, color: Color(0xFF719EC2)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                            "Tidak ada Tugas",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF0A5896),
+                              fontSize: 20,
+                              fontFamily: 'Work Sans',
+                              fontWeight: FontWeight.w600,
+                              height: 0,
+                            ),
+                          ),
+              ):
+              Column(
+                children: List.generate(tp.length, (index) {
+                  return
+                  Container(
+                width: Get.width,
+                // height: 127,
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 decoration: ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
@@ -957,824 +1439,299 @@ class _DetailPageState extends State<DetailPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                        height: 10), // Add some space between the texts
-                    Transform.translate(
-                      offset: const Offset(20,
-                          10), // Adjust the values to move up and to the left
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Text(
-                                'Tugas 1',
-                                style: TextStyle(
-                                  color: Color(0xFF0A5896),
-                                  fontSize: 16,
-                                  fontFamily: 'Work Sans',
-                                  fontWeight: FontWeight.w700,
-                                  height: 0,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ), // Adjust the space between text and container
-                              Container(
-                                width: 65,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: const Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'penugasan',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                              const SizedBox(width: 8, height: 4),
-                              Container(
-                                width: 30,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'ph-2',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ), // Add space between 'Tugas 1' and the new text
-                          const SizedBox(
-                            width: 208,
-                            child: Text(
-                              'Rabu, 11 Oktober 2023 09.51 Sampai Rabu, 18 Oktober 2023, 18.06 ',
-                              style: TextStyle(
-                                color: Color(0xFF0A5896),
-                                fontSize: 14,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.w300,
-                                height: 1.5, // Adjust line height as needed
-                              ),
-                              softWrap:
-                                  true, // Enable automatic wrapping of text
-                              maxLines: 2, // Set the maximum number of lines
-                            ),
-                          ),
-
-                          const SizedBox(
-                              height: 10), // Adjust the height as needed
-
-                          Row(
-                            children: [
-                              Container(
-                                width: 95,
-                                height: 20,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: SizedBox(
-                                    width: 87,
-                                    child: Text(
-                                      'Belum Dikerjakan',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontFamily: 'Work Sans',
-                                        fontWeight: FontWeight.w400,
-                                        height: 0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  // Aksi yang akan dilakukan saat tombol ditekan
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UploadPage(), // Ganti dengan halaman yang dituju
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 10),
-                                    Container(
-                                      width: 95,
-                                      height: 20,
-                                      decoration: ShapeDecoration(
-                                        color: Color(0xFFF3AD1B),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                        ),
-                                      ),
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.upload,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          SizedBox(width: 6),
-                                          SizedBox(
-                                            width: 69,
-                                            child: Text(
-                                              'Input tugas',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontFamily: 'Work Sans',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                width: 320,
-                height: 127,
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side:
-                        const BorderSide(width: 0.50, color: Color(0xFF719EC2)),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                        height: 10), // Add some space between the texts
-                    Transform.translate(
-                      offset: const Offset(20,
-                          10), // Adjust the values to move up and to the left
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Text(
-                                'Tugas 2',
-                                style: TextStyle(
-                                  color: Color(0xFF0A5896),
-                                  fontSize: 16,
-                                  fontFamily: 'Work Sans',
-                                  fontWeight: FontWeight.w700,
-                                  height: 0,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ), // Adjust the space between text and container
-                              Container(
-                                width: 65,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'penugasan',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                              const SizedBox(width: 8, height: 4),
-                              Container(
-                                width: 30,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'ph-2',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ), // Add space between 'Tugas 1' and the new text
-                          const SizedBox(
-                            width: 208,
-                            child: Text(
-                              'Rabu, 11 Oktober 2023 09.51 Sampai Rabu, 18 Oktober 2023, 18.06 ',
-                              style: TextStyle(
-                                color: Color(0xFF0A5896),
-                                fontSize: 14,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.w300,
-                                height: 1.5, // Adjust line height as needed
-                              ),
-                              softWrap:
-                                  true, // Enable automatic wrapping of text
-                              maxLines: 2, // Set the maximum number of lines
-                            ),
-                          ),
-
-                          const SizedBox(
-                              height: 10), // Adjust the height as needed
-
-                          Row(
-                            children: [
-                              Container(
-                                width: 95,
-                                height: 20,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: SizedBox(
-                                    width: 87,
-                                    child: Text(
-                                      'Belum Dikerjakan',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontFamily: 'Work Sans',
-                                        fontWeight: FontWeight.w400,
-                                        height: 0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  // Aksi yang akan dilakukan saat tombol ditekan
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UploadPage(), // Ganti dengan halaman yang dituju
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 10),
-                                    Container(
-                                      width: 95,
-                                      height: 20,
-                                      decoration: ShapeDecoration(
-                                        color: const Color(0xFFF3AD1B),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                        ),
-                                      ),
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.upload,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          SizedBox(width: 6),
-                                          SizedBox(
-                                            width: 69,
-                                            child: Text(
-                                              'Input tugas',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontFamily: 'Work Sans',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 33),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: Container(
-                        margin: const EdgeInsets.only(left: 20),
-                        child: const Text(
-                          'Tugas Keterampilan',
-                          style: TextStyle(
-                            color: Color(0xFF0A5896),
-                            fontSize: 20,
-                            fontFamily: 'Work Sans',
-                            fontWeight: FontWeight.w600,
-                            height: 0,
-                          ),
-                        )),
-                  ),
-                ],
-              ),
-              Container(
-                width: 340,
-                height: 30,
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side:
-                        const BorderSide(width: 0.50, color: Color(0xFF719EC2)),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.search,
-                        color: Color(0xffafbac3),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        'search',
+                    Container(
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      child: Text(
+                        tk[index].name,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: Color(0x72719EC2),
+                          color: Color(0xFF0A5896),
                           fontSize: 16,
                           fontFamily: 'Work Sans',
-                          fontWeight: FontWeight.w300,
+                          fontWeight: FontWeight.w700,
                           height: 0,
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                width: 320,
-                height: 127,
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side:
-                        const BorderSide(width: 0.50, color: Color(0xFF719EC2)),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                      ),
+                    ),
                     const SizedBox(
-                        height: 10), // Add some space between the texts
-                    Transform.translate(
-                      offset: const Offset(20,
-                          10), // Adjust the values to move up and to the left
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Text(
-                                'Tugas 1',
+                      height: 10,
+                    ), // Add space between 'Tugas 1' and the new text
+                    Text(
+                      'Start: ' + tk[index].date_start + ', ' + tk[index].time_start,
+                      style: TextStyle(
+                        color: Color(0xFF0A5896),
+                        fontSize: 14,
+                        fontFamily: 'Work Sans',
+                        fontWeight: FontWeight.w300,
+                        height: 1.5, // Adjust line height as needed
+                      ),// Enable automatic wrapping of text
+                      maxLines: 2, 
+                      overflow: TextOverflow.ellipsis,// Set the maximum number of lines
+                    ),
+                     const SizedBox(
+                      height: 5,
+                    ), // Add space between 'Tugas 1' and the new text
+                    Text(
+                      'End: ' + tk[index].date_end + ', ' + tk[index].time_end,
+                      style: TextStyle(
+                        color: Color(0xFF0A5896),
+                        fontSize: 14,
+                        fontFamily: 'Work Sans',
+                        fontWeight: FontWeight.w300,
+                        height: 1.5, // Adjust line height as needed
+                      ),// Enable automatic wrapping of text
+                      maxLines: 2, 
+                      overflow: TextOverflow.ellipsis,// Set the maximum number of lines
+                    ),                 
+                    const SizedBox(
+                        height: 10), // Adjust the height as needed               
+                    Row(
+                      children: [
+                        Container(
+                          width: 95,
+                          height: 20,
+                          decoration: ShapeDecoration(
+                            color: Color(0xFFF3AD1B),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 87,
+                              child: Text(
+                                'Belum Dikerjakan',
                                 style: TextStyle(
-                                  color: Color(0xFF0A5896),
-                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontSize: 10,
                                   fontFamily: 'Work Sans',
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w400,
                                   height: 0,
                                 ),
                               ),
-                              const SizedBox(
-                                width: 6,
-                              ), // Adjust the space between text and container
-                              Container(
-                                width: 65,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'penugasan',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                              const SizedBox(width: 8, height: 4),
-                              Container(
-                                width: 30,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: const Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'ph-2',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ), // Add space between 'Tugas 1' and the new text
-                          const SizedBox(
-                            width: 208,
-                            child: Text(
-                              'Rabu, 11 Oktober 2023 09.51 Sampai Rabu, 18 Oktober 2023, 18.06 ',
-                              style: TextStyle(
-                                color: Color(0xFF0A5896),
-                                fontSize: 14,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.w300,
-                                height: 1.5, // Adjust line height as needed
-                              ),
-                              softWrap:
-                                  true, // Enable automatic wrapping of text
-                              maxLines: 2, // Set the maximum number of lines
                             ),
                           ),
-                          const SizedBox(
-                              height: 10), // Adjust the height as needed
-                          Row(
-                            children: [
-                              Container(
-                                width: 95,
-                                height: 20,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // Aksi yang akan dilakukan saat tombol ditekan
+                            showDialog(
+                      context: context,
+                      builder: (BuildContext context) => Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: Center(
+                          child: Container(
+                            height: Get.height * 0.45,
+                            //ganti nilai height jika ada overflow di tampilan
+                            margin: EdgeInsets.symmetric(horizontal: 30),
+                            padding: EdgeInsets.all(20),
+                             decoration: ShapeDecoration(
+                                          color: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            side: const BorderSide(
+                        width: 0.50, color: Color(0xFF719EC2)),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: (){
+                                        Navigator.pop(context);
+                                      }, 
+                                      icon: Icon(Icons.arrow_back_ios, color: Colors.red,)),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      child: const Text(
+                                                'Upload Tugas',
+                                                style: TextStyle(
+                                                  color: Color(0xFF0A5896),
+                                                              fontSize: 20,
+                                                              fontFamily: 'Work Sans',
+                                                              fontWeight: FontWeight.w600,
+                                                              height: 0,
+                                                  ),
+                                              ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 25),
+                                const Text(
+                                                'Type',
+                                                style: TextStyle(
+                                                  color: Color(0xFF0A5896),
+                                                              fontSize: 20,
+                                                              fontFamily: 'Work Sans',
+                                                              fontWeight: FontWeight.w600,
+                                                              height: 0,
+                                                  ),
+                                              ),
+                                SizedBox(height: 10),         
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:[
+                                    // Row(
+                                    //   children: [
+                                    //     Radio(value: 1, groupValue: groupValue, onChanged: (value){
+                                    //       setState(() {
+                                    //         groupValue = value;
+                                    //       });
+                                    //     }),
+                                    //     Text(
+                                    //   'File',
+                                    //   style: TextStyle(
+                                    //     color: Colors.black,
+                                    //     fontSize: 14,
+                                    //     fontFamily: 'Work Sans',
+                                    //     fontWeight: FontWeight.w500,
+                                    //     height: 0,
+                                    //   ),
+                                    // ),
+                                    //   ],
+                                    // ),
+                                    Row(
+                                      children: [
+                                        Radio(value: 2, groupValue: groupValue, onChanged: (value){
+                                          setState(() {
+                                            groupValue = value as int;
+                                            print(groupValue);
+                                          });
+                                        }),
+                                        Text(
+                                      'Link',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: 'Work Sans',
+                                        fontWeight: FontWeight.w500,
+                                        height: 0,
+                                      ),
+                                    ),
+                                      ],
+                                    ),
+
+                                  ]
+                                ),
+                                SizedBox(height: 25),
+              TextField(
+              decoration: InputDecoration(
+                labelText: 'input link',
+                border: OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(10), // Sudut bulat dengan radius 5
+                ),
+              ),
+              style: const TextStyle(
+                fontFamily: 'WorkSans',
+                fontSize: 16,
+                // Ganti dengan nama font Work Sans yang sesuai
+              ),
+              onChanged: (value){
+                link = value;
+                print(link);
+              },
+            ),
+                                SizedBox(height: 25),
+                                 Container(
+                              width: Get.width,
+                              alignment: Alignment.centerRight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  DetailKelas_Api().postTugasKeterampilan(tk[index].id, _student.id, type[groupValue-1], link, _course.subject.grade).then((value) {
+                                    print(value);
+                                    Navigator.pop(context);
+                                    });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xFF0A5896), // Background color
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
                                 ),
-                                child: const Center(
-                                  child: SizedBox(
-                                    width: 87,
+                                child: const SizedBox(
+                                  width: 80,
+                                  height: 30,
+                                  child: Center(
                                     child: Text(
-                                      'Belum Dikerjakan',
+                                      'upoad',
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 10,
+                                        fontSize: 16,
                                         fontFamily: 'Work Sans',
-                                        fontWeight: FontWeight.w400,
+                                        fontWeight: FontWeight.w500,
                                         height: 0,
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                width: 6,
-                              ), // Add space between the two containers
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                      width:
-                                          10), // Add space between the icon and the text
-
-                                  //Container 2 with text
-                                  Container(
-                                    width: 95,
-                                    height: 20,
-                                    decoration: ShapeDecoration(
-                                      color: Color(0xFFF3AD1B),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons
-                                              .upload, // Replace with the desired icon
-                                          color: Colors.white,
-                                          size:
-                                              18, // Adjust the size of the icon as needed
-                                        ),
-                                        SizedBox(
-                                            width:
-                                                6), // Add space between the icon and the text
-                                        SizedBox(
-                                          width:
-                                              69, // Adjust the width of the text container accordingly
-                                          child: Text(
-                                            'Input tugas',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontFamily: 'Work Sans',
-                                              fontWeight: FontWeight.w400,
-                                              height: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                width: 320,
-                height: 127,
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side:
-                        const BorderSide(width: 0.50, color: Color(0xFF719EC2)),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                        height: 10), // Add some space between the texts
-                    Transform.translate(
-                      offset: const Offset(20,
-                          10), // Adjust the values to move up and to the left
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Text(
-                                'Tugas 2',
-                                style: TextStyle(
-                                  color: Color(0xFF0A5896),
-                                  fontSize: 16,
-                                  fontFamily: 'Work Sans',
-                                  fontWeight: FontWeight.w700,
-                                  height: 0,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ), // Adjust the space between text and container
-                              Container(
-                                width: 65,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'penugasan',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                              const SizedBox(width: 8, height: 4),
-                              Container(
-                                width: 30,
-                                height: 19,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF3AD1B),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: const Center(
-                                    child: Text(
-                                  'ph-2',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontFamily: 'Work Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                )),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ), // Add space between 'Tugas 1' and the new text
-                          const SizedBox(
-                            width: 208,
-                            child: Text(
-                              'Rabu, 11 Oktober 2023 09.51 Sampai Rabu, 18 Oktober 2023, 18.06 ',
-                              style: TextStyle(
-                                color: Color(0xFF0A5896),
-                                fontSize: 14,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.w300,
-                                height: 1.5, // Adjust line height as needed
-                              ),
-                              softWrap:
-                                  true, // Enable automatic wrapping of text
-                              maxLines: 2, // Set the maximum number of lines
+                            ),
+                          
+                              ],
                             ),
                           ),
-
-                          const SizedBox(
-                              height: 10), // Adjust the height as needed
-
-                          Row(
+                        ),
+                      ),
+                    );
+                          },
+                          child: Row(
                             children: [
+                              const SizedBox(width: 10),
                               Container(
                                 width: 95,
                                 height: 20,
                                 decoration: ShapeDecoration(
                                   color: Color(0xFFF3AD1B),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
+                                    borderRadius:
+                                        BorderRadius.circular(3),
                                   ),
                                 ),
-                                child: const Center(
-                                  child: SizedBox(
-                                    width: 87,
-                                    child: Text(
-                                      'Belum Dikerjakan',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontFamily: 'Work Sans',
-                                        fontWeight: FontWeight.w400,
-                                        height: 0,
-                                      ),
+                                child: const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload,
+                                      color: Colors.white,
+                                      size: 18,
                                     ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ), // Add space between the two containers
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                      width:
-                                          10), // Add space between the icon and the text
-
-                                  // Container 2 with text
-                                  Container(
-                                    width: 95,
-                                    height: 20,
-                                    decoration: ShapeDecoration(
-                                      color: Color(0xFFF3AD1B),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons
-                                              .upload, // Replace with the desired icon
+                                    SizedBox(width: 6),
+                                    SizedBox(
+                                      width: 69,
+                                      child: Text(
+                                        'Input tugas',
+                                        style: TextStyle(
                                           color: Colors.white,
-                                          size:
-                                              18, // Adjust the size of the icon as needed
+                                          fontSize: 12,
+                                          fontFamily: 'Work Sans',
+                                          fontWeight: FontWeight.w400,
+                                          height: 0,
                                         ),
-                                        SizedBox(
-                                            width:
-                                                6), // Add space between the icon and the text
-                                        SizedBox(
-                                          width:
-                                              69, // Adjust the width of the text container accordingly
-                                          child: Text(
-                                            'Input tugas',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontFamily: 'Work Sans',
-                                              fontWeight: FontWeight.w400,
-                                              height: 0,
-                                            ),
-                                          ),
-                                          //SizedBox(height: 15),
-                                        ),
-                                        SizedBox(height: 15),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                  //SizedBox(height: 15),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+              );
+                }),
               ),
+              
+              SizedBox(height: 15)
 
               // Lanjutkan proses yang sama untuk teks lainnya
               // ...
