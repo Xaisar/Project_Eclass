@@ -18,7 +18,7 @@ class _MyProfile extends State<MyProfile>{
   Siswa user;
   _MyProfile({required this.user});
 
-  Profile _profile = Profile(id: "", nisn: '',nama: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
+  Profile _profile = Profile(id: "", nisn: '',nama: '',alamat: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
 
   var _loading = false;
 
@@ -138,7 +138,7 @@ class _MyProfile extends State<MyProfile>{
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditProfile()),
+                      MaterialPageRoute(builder: (context) => EditProfile(user: user,profile: _profile)),
                     );
                   },
                   child: Container(
@@ -399,6 +399,28 @@ class _MyProfile extends State<MyProfile>{
                   SizedBox(height: 15),
                   Text(
                     _profile.telpon_orangtua,
+                    style: TextStyle(
+                      color: Color(0xFF0A5896),
+                      fontSize: 16,
+                      fontFamily: 'Work Sans',
+                      fontWeight: FontWeight.w600,
+                      height: 0,
+                    ),
+                  ),
+                   SizedBox(height: 30),
+                  Text(
+                    'alamat',
+                    style: TextStyle(
+                      color: Color(0xFF0A5896),
+                      fontSize: 16,
+                      fontFamily: 'Work Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    _profile.alamat,
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,

@@ -3,6 +3,7 @@ class Profile {
   String id;
   String nisn;
   String nama;
+  String alamat;
   String telpon;
   String email;
   String gender;
@@ -14,6 +15,7 @@ class Profile {
     required this.id,
     required this.nisn,
     required this.nama,
+    required this.alamat,
     required this.telpon,
     required this.email,
     required this.gender,
@@ -27,6 +29,7 @@ class Profile {
       id : json['id'].toString(),
       nisn: json['identity_number'].toString(),
       nama: json['name'].toString(),
+      alamat: json['address'].toString(),
       telpon: json['phone_number'].toString(),
       email: json['email'].toString(),
       gender: json['gender'].toString(),

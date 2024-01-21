@@ -21,15 +21,30 @@ class Profile_Api extends GetConnect {
       return data;
   }
 
-  Future<dynamic> postProfile(String username) async {
+  Future<dynamic> postProfile(String id, String nama, String telpon, String email, String tempat_lahir, String tanggal_lahir, String telpon_orangtua, String alamat) async {
+    print(id);
+    print(nama);
+    print(telpon);
+    print(email);
+    print(tanggal_lahir);
+    print(tempat_lahir);
+    print(telpon_orangtua);
+    print(alamat);
+
     final response = await http.post(
-     Uri.parse('$url/student/classes2'),
+     Uri.parse('$url/student/GantiProfile'),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, String>{
-        //ganti username untuk ganti user di tampilan dashboard
-        'username': '$username'
+        'id': '$id',
+        'nama': '$nama',
+        'telpon': '$telpon',
+        'email': '$email',
+        'tempat_lahir': '$tempat_lahir',
+        'tanggal_lahir': '$tanggal_lahir',
+        'telpon_orangtua': '$telpon_orangtua',
+        'alamat': '$alamat'
       }));
 
       final Map<String, dynamic> message = json.decode(response.body);

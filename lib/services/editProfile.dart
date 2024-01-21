@@ -1,62 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_eclass/api/profil_api.dart';
+import 'package:mobile_eclass/model/profile_model.dart';
+import 'package:mobile_eclass/model/siswa_model.dart';
 import 'profile.dart';
 
-void main() {
-  runApp(EditProfile());
+class EditProfile extends StatefulWidget{
+  Siswa user;
+  Profile profile;
+  EditProfile({Key? key, required this.user, required this.profile}):super(key: key);
+
+  @override
+  State<EditProfile> createState() => _EditProfileState(user1: user, profile1: profile);
 }
 
-class EditProfile extends StatelessWidget {
+class _EditProfileState extends State<EditProfile> {
+  Siswa user1;
+  Profile profile1;
+  _EditProfileState({required this.user1, required this.profile1});
+
+  String nama = "";
+  String telpon = "";
+  String email = "";
+  String tempat_lahir = "";
+  String tanggal_lahir = "";
+  String telpon_orangtua = "";
+  String alamat = "";
+
+  @override
+  initState(){
+    super.initState();
+    nama = profile1.nama;
+    telpon = profile1.telpon;
+    email = profile1.email;
+    tempat_lahir = profile1.tempat_lahir;
+    tanggal_lahir = profile1.tanggal_lahir;
+    telpon_orangtua = profile1.telpon_orangtua;
+    alamat = profile1.alamat;
+    print(nama);
+    print(telpon);
+    print(email);
+    print(tanggal_lahir);
+    print(tempat_lahir);
+    print(telpon_orangtua);
+    print(alamat);
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 40),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Ganti Profile',
-                        style: TextStyle(
-                          color: Color(0xFF0A5896),
-                          fontSize: 24,
-                          fontFamily: 'Work Sans',
-                          fontWeight: FontWeight.w500,
-                          height: 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-              InkWell(
-                onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => MyProfile()),
-                  // );
-                },
-                child: Icon(
+        appBar: AppBar(
+          leading: InkWell(
+                onTap: (){
+                  Navigator.pop(context);
+                  },
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Color(0xFF0A5896),
                   size: 25,
                   semanticLabel: 'Back',
-                ),
-              ),
-
-              // ...
-
-              SizedBox(height: 15),
+                )),
+          title: Text(
+                      "Ganti Profile",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        height: 0,
+                        fontSize: 24,
+                        fontFamily: 'WorkSans-Medium',
+                        color: Color(0xFF0A5896),
+                        letterSpacing: 0.96,
+                      ),
+                    ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 40),
               Center(
                 child: Padding(
                   padding: EdgeInsets.only(right: 0.0),
@@ -106,7 +131,7 @@ class EditProfile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Kageyama Tobio',
+                      profile1.nama,
                         style: TextStyle(
                           color: Color(0xFF0A5896),
                           fontSize: 20,
@@ -164,7 +189,7 @@ class EditProfile extends StatelessWidget {
                   ),
                   TextField(
                     controller: TextEditingController(
-                        text: '654221'), // Isi dengan nilai awal
+                        text: profile1.nisn), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -179,6 +204,7 @@ class EditProfile extends StatelessWidget {
                         borderSide: BorderSide(color: Color(0xffcddeec)),
                       ),
                     ),
+                    enabled: false,
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
                       print('Nilai berubah: $value');
@@ -215,7 +241,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: 'Kageyama Tobio'), // Isi dengan nilai awal
+                        text: profile1.nama), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -232,12 +258,13 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      nama = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
                   SizedBox(height: 30),
-                  Text.rich(
+                  Text.rich( 
                     TextSpan(
                       children: [
                         TextSpan(
@@ -266,7 +293,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: '-'), // Isi dengan nilai awal
+                        text: profile1.telpon), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -283,7 +310,8 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      telpon = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
@@ -317,7 +345,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: 'kageyama@gmail.com'), // Isi dengan nilai awal
+                        text: profile1.email), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -334,7 +362,8 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      email = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
@@ -369,7 +398,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: 'Laki-Laki'), // Isi dengan nilai awal
+                        text: profile1.gender), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -384,6 +413,7 @@ class EditProfile extends StatelessWidget {
                         borderSide: BorderSide(color: Color(0xffcddeec)),
                       ),
                     ),
+                    enabled: false,
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
                       print('Nilai berubah: $value');
@@ -421,7 +451,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: 'Yokohama'), // Isi dengan nilai awal
+                        text: profile1.tempat_lahir), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -438,7 +468,8 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      tempat_lahir = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
@@ -473,7 +504,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: '2006-01-01'), // Isi dengan nilai awal
+                        text: profile1.tanggal_lahir), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -481,6 +512,7 @@ class EditProfile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                     decoration: InputDecoration(
+                      hintText: "contoh data: 2006-01-01",
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffcddeec)),
                       ),
@@ -490,7 +522,8 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      tanggal_lahir = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
@@ -525,7 +558,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: '-'), // Isi dengan nilai awal
+                        text: profile1.telpon_orangtua), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -542,7 +575,8 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      telpon_orangtua = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
@@ -577,7 +611,7 @@ class EditProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   TextField(
                     controller: TextEditingController(
-                        text: 'Tokyo'), // Isi dengan nilai awal
+                        text: profile1.alamat), // Isi dengan nilai awal
                     style: TextStyle(
                       color: Color(0xFF0A5896),
                       fontSize: 16,
@@ -594,7 +628,8 @@ class EditProfile extends StatelessWidget {
                     ),
                     onChanged: (value) {
                       // Fungsi yang akan dijalankan ketika teks berubah
-                      print('Nilai berubah: $value');
+                      alamat = value;
+                      // print('Nilai berubah: $value');
                       // Tambahkan logika atau manipulasi data yang sesuai di sini
                     },
                   ),
@@ -602,10 +637,10 @@ class EditProfile extends StatelessWidget {
                   Center(
                     child: InkWell(
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => MyProfile()),
-                        // );
+                        Profile_Api().postProfile(profile1.id, nama, telpon, email, tempat_lahir, tanggal_lahir, telpon_orangtua, alamat).then((value) {
+                          print(value);
+                          Navigator.pop(context);
+                        });
                       },
                       child: Container(
                         width: 94,

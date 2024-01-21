@@ -45,29 +45,12 @@ class _EditPasswordState extends State<EditPassword> {
                         letterSpacing: 0.96,
                       ),
                     ),
-          actions: [
-              TextButton(
-                        child: Text('Read All'),
-                        style: TextButton.styleFrom(
-                          textStyle: TextStyle(
-                            color: Color(0xFF0A5896),
-                            fontSize: 11,
-                            fontFamily: 'WorkSans-Medium',
-                            fontWeight: FontWeight.w400,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                        onPressed: () {
-                          print('Pressed');
-                        },
-                      ),
-          ],
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

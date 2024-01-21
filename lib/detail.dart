@@ -36,7 +36,7 @@ class _DetailPageState extends State<DetailPage> {
   var _loading = false;
 
   Course _course = Course(id: '', semester: "", thumbnail: "", number_of_meetings: "", description: "", study_year: StudyYear(id: "", year: "", semester: ""), class_group: ClassGroup(id: "", name: "", code: ""), subject: Subject(id: "", code: "", name: "", grade: "",),teacher: Teacher(email: "",name: "",id: "",identity_number: "")) ;
-  Profile _student = Profile(id: '', nisn: '', nama: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
+  Profile _student = Profile(id: '', nisn: '', nama: '',alamat: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
   List<Kehadiran> kehadiran_present = [];
   List<Kehadiran> kehadiran_absent = [];
   List<Pelajaran> pelajaran =[];
@@ -134,7 +134,7 @@ class _DetailPageState extends State<DetailPage> {
           elevation: 0,
         ),
         body: 
-        // _loading? Center(child: CircularProgressIndicator()):
+        _loading? Center(child: CircularProgressIndicator()):
         SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
