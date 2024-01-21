@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:mobile_eclass/model/Meet_model.dart';
 import 'package:mobile_eclass/model/course_model.dart';
 import 'package:mobile_eclass/model/profile_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class ConferenceRoom extends StatefulWidget {
   Profile profil;
@@ -21,6 +23,8 @@ class _ConferenceRoomState extends State<ConferenceRoom> {
   Profile profil1;
   Meet meet2;
   Course course3;
+
+  
 
   _ConferenceRoomState({required this.profil1, required this.meet2, required this.course3});
   @override
@@ -181,24 +185,29 @@ class _ConferenceRoomState extends State<ConferenceRoom> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                Container(
-                  width: Get.width,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFF0A5896),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                GestureDetector(
+                  onTap: (){
+                    _launcerUrl(meet2.code);
+                  },
+                  child: Container(
+                    width: Get.width,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    decoration: ShapeDecoration(
+                      color: const Color(0xFF0A5896),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Join Meeting',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontFamily: 'Work Sans',
-                      fontWeight: FontWeight.w600,
-                      height: 2,
+                    child: Text(
+                      'Join Meeting',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontFamily: 'Work Sans',
+                        fontWeight: FontWeight.w600,
+                        height: 2,
+                      ),
                     ),
                   ),
                 ),
@@ -210,5 +219,13 @@ class _ConferenceRoomState extends State<ConferenceRoom> {
         ),
       ),
     );
+  }
+}
+
+Future<void> _launcerUrl(String code) async{
+  Uri _url = Uri.parse('https://us04web.zoom.us/j/$code?');
+  print(_url.toString());
+  if (!await launchUrl(_url,mode: LaunchMode.externalApplication)) {
+    throw Exception('Could not launch $_url');
   }
 }
