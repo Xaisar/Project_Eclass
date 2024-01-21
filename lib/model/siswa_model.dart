@@ -7,12 +7,14 @@ import 'package:flutter/foundation.dart';
 
 class Siswa {
   String token;
+  String id;
   String name;
   String username;
   String picture;
 
     Siswa({
     required this.token,
+    required this.id,
     required this.name,
     required this.username,
     required this.picture,
@@ -21,6 +23,7 @@ class Siswa {
   factory Siswa.fromJson(Map<String,dynamic> json) {
     return Siswa(
       token: json['token'].toString(),
+      id: json['id'].toString(),
       name: json['name'].toString(),
       username: json['username'].toString(),
       picture: json['picture'].toString()

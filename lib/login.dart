@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       // print('Token : $token');
       final Map<String, dynamic> a = data['student'];
       final String picture = a['picture'];
+      final String id = a['id'].toString();
       // print('Picture : $picture');
       final String name = a['name'];
       // print('Name : $name');
@@ -48,8 +49,9 @@ class _LoginPageState extends State<LoginPage> {
       // print('Name : $name');
       // print('Berhasil');
 
-      Siswa user = Siswa(token: token, name: name, username: username, picture: picture);
+      Siswa user = Siswa(token: token, id: id, name: name, username: username, picture: picture);
       // print(user);
+      print(user.id);
       print(user.token);
       print(user.name);
       print(user.picture);

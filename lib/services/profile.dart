@@ -180,7 +180,7 @@ class _MyProfile extends State<MyProfile>{
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditPassword()),
+                      MaterialPageRoute(builder: (context) => EditPassword(user: user)),
                     );
                   },
                   child: Container(

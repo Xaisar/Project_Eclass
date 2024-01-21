@@ -36,14 +36,15 @@ class Profile_Api extends GetConnect {
       return message;
   }
 
-  Future<dynamic> changePassword(String old_password, String new_password) async {
+  Future<dynamic> changePassword(String id, String old_password, String new_password) async {
     final response = await http.post(
-     Uri.parse('$url/student/classes2'),
+     Uri.parse('$url/student/GantiPassword'),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, String>{
         //ganti username untuk ganti user di tampilan dashboard
+        'id': '$id',
         'old_password': '$old_password',
         'new_password': '$new_password'
       }));

@@ -7,6 +7,7 @@ import 'package:mobile_eclass/dashboard.dart';
 import 'package:mobile_eclass/conference_room.dart';
 import 'package:mobile_eclass/model/Assigment_model.dart';
 import 'package:mobile_eclass/model/Meet_model.dart';
+import 'package:mobile_eclass/model/Pelajaran_model.dart';
 import 'package:mobile_eclass/model/class_group.dart';
 import 'package:mobile_eclass/model/course_model.dart';
 import 'package:mobile_eclass/model/kehadiran_model.dart';
@@ -38,6 +39,7 @@ class _DetailPageState extends State<DetailPage> {
   Profile _student = Profile(id: '', nisn: '', nama: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
   List<Kehadiran> kehadiran_present = [];
   List<Kehadiran> kehadiran_absent = [];
+  List<Pelajaran> pelajaran =[];
   List<Assignment> tp = [];
   List<Assignment> tk = [];
   List<Meet> meet = [];
@@ -64,6 +66,12 @@ class _DetailPageState extends State<DetailPage> {
           for(Map<String,dynamic> x in response['kehadiran_absent']){
           // print(x);
           kehadiran_absent.add(Kehadiran.fromJson(x));
+          };
+        };
+        if (response["courses"]["basic_comptence"] != null){
+          for(Map<String,dynamic> x in response["courses"]["basic_comptence"] ){
+          // print(x);
+          pelajaran.add(Pelajaran.fromJson(x));
           };
         };
         if (response["courses"]["video_conference"] != null){
@@ -851,7 +859,7 @@ class _DetailPageState extends State<DetailPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      ConferenceRoom(), // Ganti dengan widget atau halaman yang diinginkan
+                                      ConferenceRoom(profil: _student, meet: meet[index], course: _course), // Ganti dengan widget atau halaman yang diinginkan
                                 ),
                               );
                             },
@@ -900,8 +908,31 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
               const SizedBox(height: 15),
+              pelajaran.length == 0?
               Container(
                   width: Get.width,
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(
+                          width: 0.5, color: Color(0xFF719EC2)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ), child:Text(
+                            "Tidak ada Pelajaran",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF0A5896),
+                              fontSize: 20,
+                              fontFamily: 'Work Sans',
+                              fontWeight: FontWeight.w600,
+                              height: 0,
+                            ),
+                          )
+                  ):
+              Container(
+                  // width: Get.width,
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   decoration: ShapeDecoration(
                     color: Colors.white,
@@ -913,8 +944,7 @@ class _DetailPageState extends State<DetailPage> {
                   ), child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
+                    children: List.generate(pelajaran.length, (index) => Row(
                           children: [
                             IconButton(
                                 onPressed: () {},
@@ -922,39 +952,23 @@ class _DetailPageState extends State<DetailPage> {
                                   Icons.picture_as_pdf,
                                   color: Color(0xfff10c0c),
                                 )),
-                            const Text(
-                              'bahan ajar',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.w500,
-                                height: 0,
+                            Flexible(
+                              child: Text(
+                                pelajaran[index].name,
+                                maxLines: 2,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontFamily: 'Work Sans',
+                                  fontWeight: FontWeight.w500,
+                                  height: 0,
+                                ),
                               ),
                             )
                           ],
-                        ),
-                      Row(
-                          children: [
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.play_circle,
-                                  color: Color(0xfff10c0c),
-                                )),
-                            const Text(
-                              'bahan ajar',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.w500,
-                                height: 0,
-                              ),
-                            )
-                          ],
-                        ),
-                    ],
+                        ))
                   ),
               ),             
               const SizedBox(height: 30),

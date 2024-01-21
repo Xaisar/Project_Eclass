@@ -1,60 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_eclass/api/profil_api.dart';
+import 'package:mobile_eclass/model/siswa_model.dart';
 import 'profile.dart';
 
-void main() {
-  runApp(EditPassword());
+class EditPassword extends StatefulWidget{
+  Siswa user;
+  EditPassword({Key? key, required this.user}):super(key: key);
+  @override
+  State<EditPassword> createState() => _EditPasswordState(user1: user);
 }
 
-class EditPassword extends StatelessWidget {
+class _EditPasswordState extends State<EditPassword> {
+  Siswa user1;
+  _EditPasswordState({required this.user1});
+
+  String oldPassword = "";
+  String newPassword = "";
+  String konfirmasi = "";
+ 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        appBar: AppBar(
+          leading: InkWell(
+                onTap: (){
+                  Navigator.pop(context);
+                  },
+                child: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Color(0xFF0A5896),
+                  size: 25,
+                  semanticLabel: 'Back',
+                )),
+          title: Text(
+                      "Update Password",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        height: 0,
+                        fontSize: 24,
+                        fontFamily: 'WorkSans-Medium',
+                        color: Color(0xFF0A5896),
+                        letterSpacing: 0.96,
+                      ),
+                    ),
+          actions: [
+              TextButton(
+                        child: Text('Read All'),
+                        style: TextButton.styleFrom(
+                          textStyle: TextStyle(
+                            color: Color(0xFF0A5896),
+                            fontSize: 11,
+                            fontFamily: 'WorkSans-Medium',
+                            fontWeight: FontWeight.w400,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onPressed: () {
+                          print('Pressed');
+                        },
+                      ),
+          ],
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Update Password',
-                        style: TextStyle(
-                          color: Color(0xFF0A5896),
-                          fontSize: 24,
-                          fontFamily: 'Work Sans',
-                          fontWeight: FontWeight.w500,
-                          height: 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-              InkWell(
-                onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => MyProfile()),
-                  // );
-                },
-                child: Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Color(0xFF0A5896),
-                  size: 25,
-                  semanticLabel: 'Back',
-                ),
-              ),
-
-              SizedBox(height: 40),
               Text.rich(
                 TextSpan(
                   children: [
@@ -81,9 +97,7 @@ class EditPassword extends StatelessWidget {
                   ],
                 ),
               ),
-              TextField(
-                controller:
-                    TextEditingController(text: '-'), // Isi dengan nilai awal
+              TextField( // Isi dengan nilai awal
                 style: TextStyle(
                   color: Color(0xFF0A5896),
                   fontSize: 16,
@@ -91,6 +105,7 @@ class EditPassword extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                 ),
                 decoration: InputDecoration(
+                  hintText: "Input Password lama",
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xffcddeec)),
                   ),
@@ -100,7 +115,8 @@ class EditPassword extends StatelessWidget {
                 ),
                 onChanged: (value) {
                   // Fungsi yang akan dijalankan ketika teks berubah
-                  print('Nilai berubah: $value');
+                  oldPassword = value;
+                  // print('Nilai berubah: $value');
                   // Tambahkan logika atau manipulasi data yang sesuai di sini
                 },
               ),
@@ -132,9 +148,7 @@ class EditPassword extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 15),
-              TextField(
-                controller:
-                    TextEditingController(text: '-'), // Isi dengan nilai awal
+              TextField(// Isi dengan nilai awal
                 style: TextStyle(
                   color: Color(0xFF0A5896),
                   fontSize: 16,
@@ -142,6 +156,7 @@ class EditPassword extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 decoration: InputDecoration(
+                  hintText: "Input Password baru",
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xffcddeec)),
                   ),
@@ -151,7 +166,8 @@ class EditPassword extends StatelessWidget {
                 ),
                 onChanged: (value) {
                   // Fungsi yang akan dijalankan ketika teks berubah
-                  print('Nilai berubah: $value');
+                  newPassword = value;
+                  // print('Nilai berubah: $value');
                   // Tambahkan logika atau manipulasi data yang sesuai di sini
                 },
               ),
@@ -183,9 +199,7 @@ class EditPassword extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 15),
-              TextField(
-                controller:
-                    TextEditingController(text: '-'), // Isi dengan nilai awal
+              TextField( // Isi dengan nilai awal
                 style: TextStyle(
                   color: Color(0xFF0A5896),
                   fontSize: 16,
@@ -193,6 +207,7 @@ class EditPassword extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 decoration: InputDecoration(
+                  hintText: "Confirmasi Password",
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xffcddeec)),
                   ),
@@ -202,7 +217,8 @@ class EditPassword extends StatelessWidget {
                 ),
                 onChanged: (value) {
                   // Fungsi yang akan dijalankan ketika teks berubah
-                  print('Nilai berubah: $value');
+                  konfirmasi = value;
+                  // print('Nilai berubah: $value');
                   // Tambahkan logika atau manipulasi data yang sesuai di sini
                 },
               ),
@@ -211,10 +227,17 @@ class EditPassword extends StatelessWidget {
               Center(
                 child: InkWell(
                   onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => MyProfile()),
-                    // );
+                    if (newPassword == konfirmasi){
+                      Profile_Api().changePassword(user1.id, oldPassword, newPassword).then((value){ 
+                        print(value['berhasil']);
+                        print(value['message']);
+                        if(value['berhasil'] == 'true'){
+                          Navigator.pop(context);
+                        }
+                        });
+                    } else {
+                      print('konfirmasi yang anda masukan salah');
+                    }
                   },
                   child: Container(
                     width: 94,

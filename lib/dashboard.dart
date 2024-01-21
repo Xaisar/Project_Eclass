@@ -52,7 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final String username;
   _DashboardPageState({required this.username});
 
-  Siswa _user = Siswa(token: '', name: '',username: '' ,picture: '');
+  Siswa _user = Siswa(token: '',id: '', name: '',username: '' ,picture: '');
   List<Course> _course=[Course(id: '', semester: "", thumbnail: "", number_of_meetings: "", description: "", study_year: StudyYear(id: "", year: "", semester: ""), class_group: ClassGroup(id: "", name: "", code: ""), subject: Subject(id: "", code: "", name: "", grade: "",),teacher: Teacher(email: "",name: "",id: "",identity_number: ""))];
    
   var _loading = false;
@@ -686,7 +686,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Notif()),
+                                        builder: (context) => Notif(siswa: _user,)),
                                   );
                                 },
                                 child: Container(
