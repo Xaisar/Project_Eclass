@@ -21,7 +21,7 @@ class Profile_Api extends GetConnect {
       return data;
   }
 
-  Future<dynamic> postProfile(String id, String nama, String telpon, String email, String tempat_lahir, String tanggal_lahir, String telpon_orangtua, String alamat) async {
+  Future<dynamic> postProfile(String username, String id, String nama, String telpon, String email, String tempat_lahir, String tanggal_lahir, String telpon_orangtua, String alamat) async {
     print(id);
     print(nama);
     print(telpon);
@@ -37,6 +37,7 @@ class Profile_Api extends GetConnect {
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, String>{
+        'username' : '$username',
         'id': '$id',
         'nama': '$nama',
         'telpon': '$telpon',

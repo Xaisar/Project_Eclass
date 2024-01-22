@@ -637,7 +637,7 @@ class _EditProfileState extends State<EditProfile> {
                   Center(
                     child: InkWell(
                       onTap: () {
-                        Profile_Api().postProfile(profile1.id, nama, telpon, email, tempat_lahir, tanggal_lahir, telpon_orangtua, alamat).then((value) {
+                        Profile_Api().postProfile(user1.username, profile1.id, nama, telpon, email, tempat_lahir, tanggal_lahir, telpon_orangtua, alamat).then((value) {
                           print(value);
                           Navigator.pop(context);
                         });

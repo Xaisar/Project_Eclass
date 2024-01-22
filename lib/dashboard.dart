@@ -5,6 +5,7 @@ import 'package:mobile_eclass/constant/const.dart';
 import 'package:mobile_eclass/detail.dart';
 import 'package:mobile_eclass/model/class_group.dart';
 import 'package:mobile_eclass/model/course_model.dart';
+import 'package:mobile_eclass/model/profile_model.dart';
 import 'package:mobile_eclass/model/siswa_model.dart';
 import 'package:mobile_eclass/model/study_year_model.dart';
 import 'package:mobile_eclass/model/teacher_model.dart';
@@ -53,6 +54,7 @@ class _DashboardPageState extends State<DashboardPage> {
   _DashboardPageState({required this.username});
 
   Siswa _user = Siswa(token: '',id: '', name: '',username: '' ,picture: '');
+  Profile _siswa = Profile(id: '', nisn: '', nama: '', alamat: '', telpon: '', email: '', gender: '', tempat_lahir: '', tanggal_lahir: '', telpon_orangtua: '');
   List<Course> _course=[Course(id: '', semester: "", thumbnail: "", number_of_meetings: "", description: "", study_year: StudyYear(id: "", year: "", semester: ""), class_group: ClassGroup(id: "", name: "", code: ""), subject: Subject(id: "", code: "", name: "", grade: "",),teacher: Teacher(email: "",name: "",id: "",identity_number: ""))];
    
   var _loading = false;
@@ -78,6 +80,7 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         _course.clear();
         _user = Siswa.fromJson(response['user']);
+        _siswa = Profile.fromJson(response['student']);
 
         // print(_user.username);
         for(Map<String,dynamic> x in response['courses']){
@@ -155,7 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             Expanded(
                               // hikageyamancq (260:588)
                               child: Text(
-                                'Hi, '+ _user.name +'!',
+                                'Hi, '+ _siswa.nama +'!',
                                 style: TextStyle(
                                   fontFamily: 'Work Sans',
                                   fontSize: 20 * ffem,
